@@ -15,4 +15,3 @@ class Node:
 
     def __lt__(self, other):
         return self.path_len > other.path_len
-

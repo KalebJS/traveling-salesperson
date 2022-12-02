@@ -4,7 +4,7 @@ import time
 from contextlib import suppress
 from typing import List
 
-from genetic_algorithm import initial_generation, mutate, breed_population
+from genetic_algorithm import initial_generation, mutate, breed_population, selection
 from models import Node
 from TSPClasses import *
 from queue import PriorityQueue
@@ -230,6 +230,7 @@ class TSPSolver:
         start_time = time.time()
 
         while time.time() - start_time < time_allowance:
+            population = selection(population, ELITE_SIZE)
             population = breed_population(population, ELITE_SIZE)
             next_generation = []
             for individual in population:

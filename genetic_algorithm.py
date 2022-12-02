@@ -2,6 +2,9 @@ import random
 import time
 from typing import List
 
+import numpy as np
+import pandas as pd
+
 import TSPClasses
 from TSPClasses import City, TSPSolution
 
@@ -24,7 +27,30 @@ def initial_generation(cities: List[City], population_size: int) -> list[TSPSolu
     return [TSPSolution(random.sample(cities, len(cities))) for _ in range(population_size)]
 
 
-def mutate(individual: TSPSolution) -> TSPSolution:
+def selection(pop: List[TSPSolution], elite_size: int):
+    results = []
+
+    pop = sorted(pop, key=lambda x: x.cost)
+
+    df = pd.DataFrame(np.array([[ind.cost] for ind in pop]), columns=["cost"])
+    df["cum_sum"] = df.cost.cumsum()
+    df["cum_perc"] = 100 * df.cum_sum / df.cost.sum()
+
+    for i in range(0, elite_size):
+        results.append(pop[i])
+    for _ in range(0, len(pop) - elite_size):
+        pick = 100 * random.random()
+        for i in range(0, len(pop)):
+            if pick <= df.iat[i, 2]:
+                results.append(pop[i])
+                break
+
+    return results
+
+
+def mutate(individual: TSPSolution, mutation_rate: float = 0.1) -> TSPSolution:
+    if random.random() >= mutation_rate:
+        return TSPSolution(random.sample(individual.route, len(individual.route)))
     cities = individual.route.copy()
     i = random.randint(0, len(cities) - 1)
     j = random.randint(0, len(cities) - 1)
@@ -40,7 +66,9 @@ def breed(individual1: TSPSolution, individual2: TSPSolution) -> TSPSolution:
     end = max(i, j)
 
     gnome_part_1 = [individual1.route[a] for a in range(start, end)]
-    gnome_part_2 = [individual2.route[a] for a in range(len(individual2.route)) if individual2.route[a] not in gnome_part_1]
+    gnome_part_2 = [
+        individual2.route[a] for a in range(len(individual2.route)) if individual2.route[a] not in gnome_part_1
+    ]
 
     return TSPSolution(gnome_part_1 + gnome_part_2)
 
@@ -56,31 +84,3 @@ def breed_population(population: List[TSPSolution], elite_size: int):
         child = breed(parent1, parent2)
         next_generation.append(child)
     return next_generation
-
-
-def genetic_algorithm_mutation_only(cities: list[City], time_limit: int):
-    POPULATION_SIZE = 100
-    ELITE_SIZE = 10
-
-    population = initial_generation(cities, POPULATION_SIZE)
-
-    start_time = time.time()
-
-    while time.time() - start_time < time_limit:
-        next_generation = []
-        for individual in population:
-            while True:
-                child = mutate(individual)
-                if child.cost < individual.cost:
-                    next_generation.append(child)
-                    break
-                elif random.random() < 0.5:
-                    next_generation.append(child)
-                    break
-
-        population = next_generation
-
-    end_time = time.time()
-    print(f"Time taken: {end_time - start_time}")
-    return min(population, key=lambda x: x.cost)
-
