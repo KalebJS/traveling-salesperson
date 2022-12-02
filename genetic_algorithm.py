@@ -1,3 +1,4 @@
+import math
 import random
 import time
 from typing import List
@@ -46,14 +47,36 @@ def breed(individual1: TSPSolution, individual2: TSPSolution) -> TSPSolution:
 
 
 def breed_population(population: List[TSPSolution], elite_size: int):
+    population.sort(key=lambda x: x.cost)
     next_generation = list(population[:elite_size])
+
     for _ in range(elite_size, len(population)):
         while True:
-            parent1 = random.choice(population)
-            parent2 = random.choice(population)
+            # pick random parent, weighted by cost
+
+            if random.random() < 0.01:
+                parent1 = random.choice(population)
+                parent2 = random.choice(population)
+            else:
+                parent1 = random.choice(population[:elite_size * 2])
+                parent2 = random.choice(population[:elite_size * 2])
+
+            # parent1 = random.choices(
+            #     population,
+            #     weights=[(1 / x.cost) if x != math.inf else 0.0000001 for x in population]
+            # )[0]
+            # parent2 = random.choices(population, weights=[(1 / x.cost) if x != math.inf else 0.0000001 for x in population])[0]
+            # parent1 = random.choice(population)
+            # parent2 = random.choice(population)
             if parent1 != parent2:
                 break
-        child = breed(parent1, parent2)
+
+        child = None
+        child_cost = math.inf
+        while child_cost == math.inf:
+            child = breed(parent1, parent2)
+            child_cost = child.cost
+
         next_generation.append(child)
     return next_generation
 
