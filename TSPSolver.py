@@ -220,8 +220,11 @@ class TSPSolver:
         :param time_allowance: float
         :return:
         """
-        POPULATION_SIZE = 100
-        ELITE_SIZE = 10
+
+        bssf_updates = 0
+
+        POPULATION_SIZE = 200
+        ELITE_SIZE = 20
         cities = self._scenario.get_cities().copy()
         population = initial_generation(cities, POPULATION_SIZE)
 
@@ -243,6 +246,7 @@ class TSPSolver:
                         break
 
                 if child.cost < bssf.cost:
+                    bssf_updates += 1
                     bssf = child
 
             population = next_generation
@@ -252,7 +256,7 @@ class TSPSolver:
         return {
             "cost": bssf.cost,
             "time": end_time - start_time,
-            "count": 1,
+            "count": bssf_updates,
             "soln": bssf,
             "max": None,
             "total": None,
