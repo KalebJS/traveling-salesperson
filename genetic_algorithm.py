@@ -50,24 +50,20 @@ def breed_population(population: List[TSPSolution], elite_size: int):
     population.sort(key=lambda x: x.cost)
     next_generation = list(population[:elite_size])
 
+    CHOOSE_ANY_CHANCE = .01
+    ELITE_SIZE_FACTOR = 2
+
     for _ in range(elite_size, len(population)):
         while True:
             # pick random parent, weighted by cost
 
-            if random.random() < 0.01:
+            if random.random() < CHOOSE_ANY_CHANCE:
                 parent1 = random.choice(population)
                 parent2 = random.choice(population)
             else:
-                parent1 = random.choice(population[:elite_size * 2])
-                parent2 = random.choice(population[:elite_size * 2])
+                parent1 = random.choice(population[:elite_size * ELITE_SIZE_FACTOR])
+                parent2 = random.choice(population[:elite_size * ELITE_SIZE_FACTOR])
 
-            # parent1 = random.choices(
-            #     population,
-            #     weights=[(1 / x.cost) if x != math.inf else 0.0000001 for x in population]
-            # )[0]
-            # parent2 = random.choices(population, weights=[(1 / x.cost) if x != math.inf else 0.0000001 for x in population])[0]
-            # parent1 = random.choice(population)
-            # parent2 = random.choice(population)
             if parent1 != parent2:
                 break
 
