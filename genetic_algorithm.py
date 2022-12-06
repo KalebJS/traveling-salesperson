@@ -1,23 +1,10 @@
+import math
 import random
 import time
 from typing import List
 
 import TSPClasses
 from TSPClasses import City, TSPSolution
-
-"""
-def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
-    pop = initialPopulation(popSize, population)
-    print("Initial distance: " + str(1 / rankRoutes(pop)[0][1]))
-    
-    for i in range(0, generations):
-        pop = nextGeneration(pop, eliteSize, mutationRate)
-    
-    print("Final distance: " + str(1 / rankRoutes(pop)[0][1]))
-    bestRouteIndex = rankRoutes(pop)[0][0]
-    bestRoute = pop[bestRouteIndex]
-    return bestRoute
-"""
 
 
 def initial_generation(cities: List[City], population_size: int) -> list[TSPSolution]:
@@ -46,41 +33,33 @@ def breed(individual1: TSPSolution, individual2: TSPSolution) -> TSPSolution:
 
 
 def breed_population(population: List[TSPSolution], elite_size: int):
+    population.sort(key=lambda x: x.cost)
     next_generation = list(population[:elite_size])
+
+    CHOOSE_ANY_CHANCE = .01
+    ELITE_SIZE_FACTOR = 2
+
     for _ in range(elite_size, len(population)):
         while True:
-            parent1 = random.choice(population)
-            parent2 = random.choice(population)
+            # pick random parent, weighted by cost
+
+            if random.random() < CHOOSE_ANY_CHANCE:
+                parent1 = random.choice(population)
+                parent2 = random.choice(population)
+            else:
+                parent1 = random.choice(population[:elite_size * ELITE_SIZE_FACTOR])
+                parent2 = random.choice(population[:elite_size * ELITE_SIZE_FACTOR])
+
             if parent1 != parent2:
                 break
+
+        # child = None
+        # child_cost = math.inf
+        # while child_cost == math.inf:
+        #     child = breed(parent1, parent2)
+        #     child_cost = child.cost
         child = breed(parent1, parent2)
+
         next_generation.append(child)
     return next_generation
-
-
-def genetic_algorithm_mutation_only(cities: list[City], time_limit: int):
-    POPULATION_SIZE = 100
-    ELITE_SIZE = 10
-
-    population = initial_generation(cities, POPULATION_SIZE)
-
-    start_time = time.time()
-
-    while time.time() - start_time < time_limit:
-        next_generation = []
-        for individual in population:
-            while True:
-                child = mutate(individual)
-                if child.cost < individual.cost:
-                    next_generation.append(child)
-                    break
-                elif random.random() < 0.5:
-                    next_generation.append(child)
-                    break
-
-        population = next_generation
-
-    end_time = time.time()
-    print(f"Time taken: {end_time - start_time}")
-    return min(population, key=lambda x: x.cost)
 
