@@ -1,9 +1,6 @@
-import math
 import random
-import time
 from typing import List
 
-import TSPClasses
 from TSPClasses import City, TSPSolution
 
 
@@ -41,8 +38,8 @@ def breed_population(population: List[TSPSolution], elite_size: int):
 
     for _ in range(elite_size, len(population)):
         while True:
-            # pick random parent, weighted by cost
 
+            # pick random parent, weighted by cost
             if random.random() < CHOOSE_ANY_CHANCE:
                 parent1 = random.choice(population)
                 parent2 = random.choice(population)
@@ -53,11 +50,6 @@ def breed_population(population: List[TSPSolution], elite_size: int):
             if parent1 != parent2:
                 break
 
-        # child = None
-        # child_cost = math.inf
-        # while child_cost == math.inf:
-        #     child = breed(parent1, parent2)
-        #     child_cost = child.cost
         child = breed(parent1, parent2)
 
         next_generation.append(child)
