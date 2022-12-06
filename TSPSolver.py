@@ -58,13 +58,14 @@ class TSPSolver:
             "pruned": None,
         }
 
-    def greedy(self, time_allowance=60.0):
+    def greedy(self, time_allowance=60.0, sample_size=0):
         """
         This is the entry point for the greedy algorithm
 
         Time complexity: O(n^2)
         Space complexity: O(n)
 
+        :param sample_size:
         :param time_allowance:
         :return: results dictionary for GUI that contains three ints: cost of best solution,
         time spent to find best solution, total number of solutions found, the best
@@ -75,7 +76,7 @@ class TSPSolver:
 
         cities = self._scenario.get_cities().copy()
         random.shuffle(cities)
-        bssf = None
+        sample = []
 
         with suppress(StopIteration):
             for start in cities:
@@ -92,20 +93,27 @@ class TSPSolver:
                     start = nearest
 
                 solution = TSPSolution(route)
-                if not bssf or solution.cost < bssf.cost:
-                    bssf = solution
+
+                if solution.cost < np.inf:
+                    sample.append(solution)
 
         end_time = time.time()
 
-        return {
-            "cost": bssf.cost,
-            "time": end_time - start_time,
-            "count": 1,
-            "soln": bssf,
-            "max": None,
-            "total": None,
-            "pruned": None,
-        }
+        sample.sort(key=lambda solution: solution.cost)
+        bssf = sample[0] if sample else None
+
+        if sample_size <= 0:
+            return {
+                "cost": bssf.cost,
+                "time": end_time - start_time,
+                "count": 1,
+                "soln": bssf,
+                "max": None,
+                "total": None,
+                "pruned": None,
+            }
+        else:
+            return sample[:sample_size]
 
     def branch_and_bound(self, time_allowance=60.0):
         """
@@ -223,13 +231,18 @@ class TSPSolver:
         POPULATION_SIZE = 200
         ELITE_SIZE = 20
 
+        assert ELITE_SIZE < POPULATION_SIZE
+
         start_time = time.time()
 
+        greedy_sample = self.greedy(time_allowance, sample_size=ELITE_SIZE)
+        print(len(greedy_sample))
         cities = self._scenario.get_cities().copy()
-        population = initial_generation(cities, POPULATION_SIZE)
+        population = initial_generation(cities, POPULATION_SIZE - len(greedy_sample))
+        population.extend(greedy_sample)
 
         bssf_updates = 0
-        bssf = population[0]
+        bssf = min(population, key=lambda solution: solution.cost)
         generations = 1
 
         while time.time() - start_time < time_allowance:
