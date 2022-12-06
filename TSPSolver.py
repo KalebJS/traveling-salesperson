@@ -220,17 +220,17 @@ class TSPSolver:
         :param time_allowance: float
         :return:
         """
-
-        bssf_updates = 0
-
         POPULATION_SIZE = 200
         ELITE_SIZE = 20
+
+        start_time = time.time()
+
         cities = self._scenario.get_cities().copy()
         population = initial_generation(cities, POPULATION_SIZE)
 
+        bssf_updates = 0
         bssf = population[0]
-
-        start_time = time.time()
+        generations = 1
 
         while time.time() - start_time < time_allowance:
             population = breed_population(population, ELITE_SIZE)
@@ -250,53 +250,15 @@ class TSPSolver:
                     bssf = child
 
             population = next_generation
+            generations += 1
 
         end_time = time.time()
-        print(f"Time taken: {end_time - start_time}")
         return {
             "cost": bssf.cost,
             "time": end_time - start_time,
             "count": bssf_updates,
             "soln": bssf,
-            "max": None,
-            "total": None,
-            "pruned": None,
-        }
-
-    def fancy_mutation_only(self, time_allowance=60.0):
-        """
-        This is the entry point for the branch-and-bound algorithm that you will implement
-        :param time_allowance: float
-        :return:
-        """
-        POPULATION_SIZE = 100
-        cities = self._scenario.get_cities().copy()
-        population = initial_generation(cities, POPULATION_SIZE)
-
-        start_time = time.time()
-
-        while time.time() - start_time < time_allowance:
-            next_generation = []
-            for individual in population:
-                while True:
-                    child = mutate(individual)
-                    if child.cost < individual.cost:
-                        next_generation.append(child)
-                        break
-                    elif random.random() < 0.01:
-                        next_generation.append(child)
-                        break
-
-            population = next_generation
-
-        end_time = time.time()
-        print(f"Time taken: {end_time - start_time}")
-        return {
-            "cost": min(population, key=lambda x: x.cost).cost,
-            "time": end_time - start_time,
-            "count": 1,
-            "soln": min(population, key=lambda x: x.cost),
-            "max": None,
-            "total": None,
-            "pruned": None,
+            "max": POPULATION_SIZE,
+            "total": generations,
+            "pruned": bssf_updates,
         }

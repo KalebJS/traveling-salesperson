@@ -6,20 +6,6 @@ from typing import List
 import TSPClasses
 from TSPClasses import City, TSPSolution
 
-"""
-def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
-    pop = initialPopulation(popSize, population)
-    print("Initial distance: " + str(1 / rankRoutes(pop)[0][1]))
-    
-    for i in range(0, generations):
-        pop = nextGeneration(pop, eliteSize, mutationRate)
-    
-    print("Final distance: " + str(1 / rankRoutes(pop)[0][1]))
-    bestRouteIndex = rankRoutes(pop)[0][0]
-    bestRoute = pop[bestRouteIndex]
-    return bestRoute
-"""
-
 
 def initial_generation(cities: List[City], population_size: int) -> list[TSPSolution]:
     return [TSPSolution(random.sample(cities, len(cities))) for _ in range(population_size)]
@@ -67,39 +53,13 @@ def breed_population(population: List[TSPSolution], elite_size: int):
             if parent1 != parent2:
                 break
 
-        child = None
-        child_cost = math.inf
-        while child_cost == math.inf:
-            child = breed(parent1, parent2)
-            child_cost = child.cost
+        # child = None
+        # child_cost = math.inf
+        # while child_cost == math.inf:
+        #     child = breed(parent1, parent2)
+        #     child_cost = child.cost
+        child = breed(parent1, parent2)
 
         next_generation.append(child)
     return next_generation
-
-
-def genetic_algorithm_mutation_only(cities: list[City], time_limit: int):
-    POPULATION_SIZE = 100
-    ELITE_SIZE = 10
-
-    population = initial_generation(cities, POPULATION_SIZE)
-
-    start_time = time.time()
-
-    while time.time() - start_time < time_limit:
-        next_generation = []
-        for individual in population:
-            while True:
-                child = mutate(individual)
-                if child.cost < individual.cost:
-                    next_generation.append(child)
-                    break
-                elif random.random() < 0.5:
-                    next_generation.append(child)
-                    break
-
-        population = next_generation
-
-    end_time = time.time()
-    print(f"Time taken: {end_time - start_time}")
-    return min(population, key=lambda x: x.cost)
 
