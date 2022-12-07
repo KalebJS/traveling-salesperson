@@ -236,7 +236,6 @@ class TSPSolver:
         start_time = time.time()
 
         greedy_sample = self.greedy(time_allowance, sample_size=ELITE_SIZE)
-        print(len(greedy_sample))
         cities = self._scenario.get_cities().copy()
         population = initial_generation(cities, POPULATION_SIZE - len(greedy_sample))
         population.extend(greedy_sample)
