@@ -1,0 +1,7 @@
+# Cities,Seed,Running time (sec.),Cost of best tour found (*=optimal),Max # of stored states at a given time,# of BSSF updates,Total # of states created,Total # of states pruned
+15,1,600.0606551170349,11365,200,1,6853,1
+30,1,600.1825039386749,13415,200,20,1682,20
+60,1,600.1489207744598,21587,200,33,1179,33
+100,1,600.6172521114349,40984,200,3,579,3
+200,1,601.1774179935455,52271,200,0,267,0
+300,1,602.7424459457397,70237,200,1,172,1
