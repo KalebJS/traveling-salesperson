@@ -224,7 +224,11 @@ class TSPSolver:
 
     def fancy(self, time_allowance=60.0):
         """
-        This is the entry point for the branch-and-bound algorithm that you will implement
+        Genetic algorithm implementation for TSP
+
+        Time complexity: O(an^2) ( a = number of iterations that can be run in time_allowance)
+        Space complexity: O(n^2)
+
         :param time_allowance: float
         :return:
         """
@@ -235,21 +239,22 @@ class TSPSolver:
 
         start_time = time.time()
 
-        greedy_sample = self.greedy(time_allowance, sample_size=ELITE_SIZE)
-        cities = self._scenario.get_cities().copy()
-        population = initial_generation(cities, POPULATION_SIZE - len(greedy_sample))
+        greedy_sample = self.greedy(time_allowance, sample_size=ELITE_SIZE)  # T: O(n^2), S: O(n)
+        print(len(greedy_sample))
+        cities = self._scenario.get_cities().copy()  # T: O(n), S: O(n)
+        population = initial_generation(cities, POPULATION_SIZE - len(greedy_sample))  # T: O(n), S: O(n)
         population.extend(greedy_sample)
 
         bssf_updates = 0
-        bssf = min(population, key=lambda solution: solution.cost)
+        bssf = min(population, key=lambda solution: solution.cost)  # T: O(n)
         generations = 1
 
-        while time.time() - start_time < time_allowance:
-            population = breed_population(population, ELITE_SIZE)
+        while time.time() - start_time < time_allowance:  # run time_allowance seconds
+            population = breed_population(population, ELITE_SIZE)  # T: O(n^2), S: O(n^2)
             next_generation = []
             for individual in population:
                 while True:
-                    child = mutate(individual)
+                    child = mutate(individual)  # T: O(n), S: O(n)
                     if child.cost < individual.cost:
                         next_generation.append(child)
                         break
