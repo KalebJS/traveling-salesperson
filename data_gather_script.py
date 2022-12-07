@@ -23,7 +23,7 @@ xr = data_range["x"]
 yr = data_range["y"]
 
 
-for npoints in [15, 30, 60, 100, 200, 300]:
+for npoints in tqdm([15, 30, 60, 100, 200, 300]):
     random.seed(seed)
     points = []
     while len(points) < npoints:
