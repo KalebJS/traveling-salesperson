@@ -23,7 +23,7 @@ xr = data_range["x"]
 yr = data_range["y"]
 
 
-for npoints in tqdm(range(10, 201)):
+for npoints in [15, 30, 60, 100, 200, 300]:
     random.seed(seed)
     points = []
     while len(points) < npoints:
@@ -37,13 +37,13 @@ for npoints in tqdm(range(10, 201)):
     solver = TSPSolver(None)
     solver.setupWithScenario(scenario)
     if solver_function == "fancy":
-        result = solver.fancy()
+        result = solver.fancy(600)
     elif solver_function == "greedy":
-        result = solver.greedy()
+        result = solver.greedy(600)
     elif solver_function == "brute":
-        result = solver.defaultRandomTour()
+        result = solver.defaultRandomTour(600)
     elif solver_function == "branch":
-        result = solver.branch_and_bound()
+        result = solver.branch_and_bound(600)
     else:
         raise Exception("Solver function not recognized")
 
@@ -60,4 +60,4 @@ for npoints in tqdm(range(10, 201)):
 
 
 df = pd.DataFrame(data)
-df.to_csv(path_or_buf=f"./data/data_{solver_function}.csv", index=False)
+df.to_csv(path_or_buf=f"./data/data_10_minutes_{solver_function}.csv", index=False)
