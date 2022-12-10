@@ -23,7 +23,7 @@ xr = data_range["x"]
 yr = data_range["y"]
 
 
-for npoints in tqdm([15, 30, 60, 100, 200, 300]):
+for npoints in tqdm(range(10, 201)):
     random.seed(seed)
     points = []
     while len(points) < npoints:
@@ -47,16 +47,18 @@ for npoints in tqdm([15, 30, 60, 100, 200, 300]):
     else:
         raise Exception("Solver function not recognized")
 
-    data.append({
-        "# Cities": npoints,
-        "Seed": seed,
-        "Running time (sec.)": result["time"],
-        "Cost of best tour found (*=optimal)": result["cost"],
-        "Max # of stored states at a given time": result["max"],
-        "# of BSSF updates": result["count"],
-        "Total # of states created": result["total"],
-        "Total # of states pruned": result["pruned"]
-    })
+    data.append(
+        {
+            "# Cities": npoints,
+            "Seed": seed,
+            "Running time (sec.)": result["time"],
+            "Cost of best tour found (*=optimal)": result["cost"],
+            "Max # of stored states at a given time": result["max"],
+            "# of BSSF updates": result["count"],
+            "Total # of states created": result["total"],
+            "Total # of states pruned": result["pruned"],
+        }
+    )
 
 
 df = pd.DataFrame(data)
